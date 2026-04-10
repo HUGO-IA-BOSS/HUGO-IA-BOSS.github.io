@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Era Solar — Ahorra hasta 70% en tu cuenta de luz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:#1A6FD4; --blue-dark:#0D4EA6; --blue-light:rgba(26,111,212,0.15);
+      --green:#1DB869; --green-light:rgba(29,184,105,0.15);
+      --yellow:#FFE000; --yellow-glow:rgba(255,224,0,0.3);
+      --bg:#060B14; --bg2:rgba(255,255,255,0.03);
+      --border:rgba(255,255,255,0.08); --border-hover:rgba(26,111,212,0.4);
+      --text:white; --muted:rgba(255,255,255,0.45); --subtle:rgba(255,255,255,0.2);
+      --f:'Plus Jakarta Sans',system-ui,sans-serif;
+    }
+    body { background:var(--bg); color:var(--text); font-family:var(--f); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+
+    /* ── BLOBS ── */
+    .bg-blobs { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .blob { position:absolute; border-radius:50%; filter:blur(80px); }
+    .blob-1 { width:600px; height:600px; background:#1A6FD4; top:-150px; left:-100px; opacity:0.3; }
+    .blob-2 { width:500px; height:500px; background:#1DB869; top:300px; right:-150px; opacity:0.15; }
+    .blob-3 { width:450px; height:450px; background:#1A3A8A; bottom:-100px; left:30%; opacity:0.25; }
+
+    /* ── NAV ── */
+    nav { position:relative; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:1.4rem 2.5rem; border-bottom:0.5px solid var(--border); backdrop-filter:blur(12px); }
+    .nlogo { font-size:20px; font-weight:800; letter-spacing:-0.5px; color:white; }
+    .nlogo span { color:var(--yellow); }
+    .nlinks { display:flex; gap:28px; }
+    .nlinks a { font-size:13px; color:var(--muted); font-weight:500; text-decoration:none; transition:color 0.15s; }
+    .nlinks a:hover, .nlinks a.active { color:white; }
+    .nav-cta { font-family:var(--f); font-size:13px; font-weight:700; background:var(--yellow); color:var(--bg); border:none; border-radius:980px; padding:9px 20px; cursor:pointer; }
+
+    /* ── HERO ── */
+    .hero { position:relative; z-index:1; text-align:center; padding:7rem 2rem 5rem; }
+    .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.06); border:0.5px solid var(--border); border-radius:980px; padding:6px 16px; font-size:12px; font-weight:500; color:var(--muted); margin-bottom:2rem; }
+    .badge-dot { width:6px; height:6px; background:var(--green); border-radius:50%; box-shadow:0 0 8px var(--green); }
+    .hero-h1 { font-size:72px; font-weight:800; letter-spacing:-3px; line-height:1.02; margin-bottom:1.5rem; background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.65) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero-h1 .accent { background:linear-gradient(90deg,var(--yellow),#FFB800); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero-sub { font-size:17px; font-weight:300; color:var(--muted); max-width:520px; margin:0 auto 2.5rem; line-height:1.7; }
+    .hero-cta-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .btn-main { font-family:var(--f); font-size:16px; font-weight:700; background:var(--yellow); color:var(--bg); border:none; border-radius:980px; padding:15px 32px; cursor:pointer; box-shadow:0 0 40px var(--yellow-glow); transition:box-shadow 0.2s; }
+    .btn-main:hover { box-shadow:0 0 70px rgba(255,224,0,0.5); }
+    .btn-sec { font-family:var(--f); font-size:15px; font-weight:500; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.8); border:0.5px solid var(--border); border-radius:980px; padding:15px 28px; cursor:pointer; }
+
+    /* ── GLOW LINE ── */
+    .glow-line { position:relative; z-index:1; height:1px; background:linear-gradient(90deg,transparent,rgba(26,111,212,0.8),rgba(29,184,105,0.6),transparent); box-shadow:0 0 20px rgba(26,111,212,0.4); margin:0 2rem; }
+
+    /* ── STATS ── */
+    .stats { position:relative; z-index:1; display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border-top:0.5px solid var(--border); }
+    .stat { padding:2.5rem 2rem; text-align:center; background:var(--bg); }
+    .stat-num { font-size:48px; font-weight:800; letter-spacing:-2px; line-height:1; }
+    .stat-num.white { background:linear-gradient(135deg,white,rgba(255,255,255,0.6)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .stat-num.yellow { background:linear-gradient(135deg,var(--yellow),#FFB800); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .stat-num.green { background:linear-gradient(135deg,var(--green),#0FE87A); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .stat-label { font-size:13px; color:rgba(255,255,255,0.35); margin-top:6px; }
+
+    /* ── FEATURES ── */
+    .features-section { position:relative; z-index:1; padding:5rem 2rem; max-width:960px; margin:0 auto; }
+    .features-title { font-size:40px; font-weight:800; letter-spacing:-1.5px; text-align:center; margin-bottom:0.5rem; }
+    .features-title span { background:linear-gradient(90deg,var(--yellow),#FFB800); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .features-sub { text-align:center; font-size:15px; color:var(--muted); font-weight:300; margin-bottom:3rem; }
+    .features-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+    .feat { background:var(--bg2); border:0.5px solid var(--border); border-radius:20px; padding:2rem; position:relative; overflow:hidden; transition:border-color 0.2s; }
+    .feat:hover { border-color:var(--border-hover); }
+    .feat-glow { position:absolute; top:-60px; right:-60px; width:160px; height:160px; border-radius:50%; filter:blur(50px); opacity:0; transition:opacity 0.3s; }
+    .feat:hover .feat-glow { opacity:0.35; }
+    .feat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:1.2rem; font-size:20px; }
+    .icon-blue { background:var(--blue-light); box-shadow:0 0 20px rgba(26,111,212,0.2); }
+    .icon-green { background:var(--green-light); box-shadow:0 0 20px rgba(29,184,105,0.2); }
+    .icon-yellow { background:rgba(255,224,0,0.12); box-shadow:0 0 20px rgba(255,224,0,0.15); }
+    .feat-title { font-size:16px; font-weight:700; margin-bottom:8px; }
+    .feat-body { font-size:13px; color:var(--muted); line-height:1.6; font-weight:300; }
+
+    /* ── FORM ── */
+    .form-section { position:relative; z-index:1; padding:4rem 2rem 7rem; max-width:520px; margin:0 auto; text-align:center; }
+    .form-title { font-size:38px; font-weight:800; letter-spacing:-1.5px; margin-bottom:0.5rem; }
+    .form-title span { background:linear-gradient(90deg,var(--yellow),#FFB800); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .form-sub { font-size:14px; color:var(--muted); margin-bottom:2rem; font-weight:300; }
+    .form-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:20px; padding:2rem; text-align:left; box-shadow:0 0 60px rgba(26,111,212,0.08); }
+    .flabel { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:6px; display:block; }
+    .finp { width:100%; font-family:var(--f); font-size:14px; font-weight:400; padding:12px 16px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:10px; color:white; outline:none; transition:all 0.2s; margin-bottom:12px; }
+    .finp:focus { border-color:var(--blue); background:rgba(26,111,212,0.08); box-shadow:0 0 0 3px rgba(26,111,212,0.15); }
+    .finp::placeholder { color:rgba(255,255,255,0.2); }
+    .fsel { width:100%; font-family:var(--f); font-size:14px; padding:12px 16px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:10px; color:white; outline:none; margin-bottom:12px; }
+    .fsel option { background:#0D1A2E; }
+    .frow { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .submit-btn { width:100%; font-family:var(--f); font-size:16px; font-weight:700; background:var(--yellow); color:var(--bg); border:none; border-radius:12px; padding:15px; cursor:pointer; box-shadow:0 0 30px var(--yellow-glow); transition:box-shadow 0.2s; margin-top:4px; }
+    .submit-btn:hover { box-shadow:0 0 55px rgba(255,224,0,0.5); }
+    .trust-pills { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:1.2rem; }
+    .tpill { font-size:11px; color:rgba(255,255,255,0.3); display:flex; align-items:center; gap:5px; }
+    .tpill-dot { width:5px; height:5px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); }
+
+    @media (max-width:700px) {
+      .hero-h1 { font-size:44px; letter-spacing:-2px; }
+      .nlinks { display:none; }
+      .stats { grid-template-columns:1fr; }
+      .frow { grid-template-columns:1fr; }
+      nav { padding:1rem 1.5rem; }
+      .hero { padding:4rem 1.5rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <nav>
+    <div class="nlogo">Era <span>Solar</span></div>
+    <div class="nlinks">
+      <a href="#" class="active">Inicio</a>
+      <a href="#">Productos</a>
+      <a href="#">Instalación</a>
+      <a href="#">Empresa</a>
+    </div>
+    <button class="nav-cta">⚡ Simular ahorro</button>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge"><div class="badge-dot"></div>Nuevo · Financiamiento sin pie disponible</div>
+    <h1 class="hero-h1">Ahorra hasta<br><span class="accent">70% en tu</span><br>cuenta de luz</h1>
+    <p class="hero-sub">Instalamos tu sistema solar fotovoltaico sin costo inicial. Empieza a ahorrar desde el primer mes.</p>
+    <div class="hero-cta-row">
+      <button class="btn-main">⚡ Simular mi ahorro</button>
+      <button class="btn-sec">Ver cómo funciona →</button>
+    </div>
+  </section>
+
+  <div class="glow-line"></div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num yellow">70%</div><div class="stat-label">Ahorro en factura eléctrica</div></div>
+    <div class="stat"><div class="stat-num white">+2.000</div><div class="stat-label">Instalaciones en Chile</div></div>
+    <div class="stat"><div class="stat-num green">25 años</div><div class="stat-label">Garantía en paneles</div></div>
+  </div>
+
+  <section class="features-section">
+    <h2 class="features-title">Todo incluido, <span>sin sorpresas</span></h2>
+    <p class="features-sub">Desde la simulación hasta la instalación, lo hacemos por ti.</p>
+    <div class="features-grid">
+      <div class="feat">
+        <div class="feat-glow" style="background:var(--blue);"></div>
+        <div class="feat-icon icon-blue">⚡</div>
+        <div class="feat-title">Sin costo inicial</div>
+        <div class="feat-body">Accede a financiamiento CORFO con cuotas menores a tu ahorro mensual desde el primer día.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-glow" style="background:var(--green);"></div>
+        <div class="feat-icon icon-green">◎</div>
+        <div class="feat-title">Instalación profesional</div>
+        <div class="feat-body">Equipo certificado MINENERGIA. Instalamos en menos de 2 días hábiles con garantía total.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-glow" style="background:var(--yellow);"></div>
+        <div class="feat-icon icon-yellow">↗</div>
+        <div class="feat-title">Monitoreo 24/7</div>
+        <div class="feat-body">App en tiempo real para ver tu generación, ahorro mensual y huella de carbono evitada.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-glow" style="background:var(--blue);"></div>
+        <div class="feat-icon icon-blue">◈</div>
+        <div class="feat-title">Paneles premium</div>
+        <div class="feat-body">Monocristalinos de 450W con 21.5% de eficiencia. Los mejores del mercado con garantía 25 años.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-glow" style="background:var(--green);"></div>
+        <div class="feat-icon icon-green">❋</div>
+        <div class="feat-title">Huella de carbono</div>
+        <div class="feat-body">Evita hasta 2.4 toneladas de CO₂ al año. Recibe tu certificado de impacto ambiental.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-glow" style="background:var(--yellow);"></div>
+        <div class="feat-icon icon-yellow">⊕</div>
+        <div class="feat-title">Soporte permanente</div>
+        <div class="feat-body">Equipo técnico disponible los 365 días del año. Mantención preventiva incluida el primer año.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <h2 class="form-title">Simula tu <span>ahorro</span></h2>
+    <p class="form-sub">Gratis y sin compromiso · Respuesta en menos de 24 horas</p>
+    <div class="form-card">
+      <div class="frow">
+        <div><label class="flabel">Nombre</label><input class="finp" type="text" placeholder="María González"></div>
+        <div><label class="flabel">Teléfono</label><input class="finp" type="tel" placeholder="+56 9 ···"></div>
+      </div>
+      <label class="flabel">Correo electrónico</label>
+      <input class="finp" type="email" placeholder="maria@email.com">
+      <label class="flabel">Consumo mensual</label>
+      <select class="fsel">
+        <option>Menos de 200 kWh</option>
+        <option>200–400 kWh</option>
+        <option selected>400–700 kWh</option>
+        <option>Más de 700 kWh</option>
+      </select>
+      <label class="flabel">Tipo de propiedad</label>
+      <select class="fsel" style="margin-bottom:20px;">
+        <option>Casa</option>
+        <option>Departamento</option>
+        <option>Empresa / comercio</option>
+        <option>Industrial</option>
+      </select>
+      <button class="submit-btn">⚡ Calcular mi ahorro →</button>
+    </div>
+    <div class="trust-pills">
+      <span class="tpill"><div class="tpill-dot"></div>Sin spam</span>
+      <span class="tpill"><div class="tpill-dot"></div>Sin compromiso</span>
+      <span class="tpill"><div class="tpill-dot"></div>Respuesta en 24h</span>
+    </div>
+  </section>
+
+</body>
+</html>
