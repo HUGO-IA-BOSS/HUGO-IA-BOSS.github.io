@@ -118,6 +118,7 @@ body{background:var(--bg);font-family:var(--f);color:var(--ink);-webkit-font-smo
 
 /* ── PRINT ── */
 @media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}
   body{background:#fff;}
   .screen-wrap{padding:0;max-width:100%;}
   .toolbar{display:none;}
