@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Era Solar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:         #1A6FD4;
+      --blue-dark:    #0D4EA6;
+      --blue-glow:    rgba(26,111,212,0.25);
+      --blue-surface: rgba(26,111,212,0.12);
+      --green:        #1DB869;
+      --green-glow:   rgba(29,184,105,0.25);
+      --green-surface:rgba(29,184,105,0.12);
+      --yellow:       #FFE000;
+      --yellow-glow:  rgba(255,224,0,0.3);
+      --yellow-surface:rgba(255,224,0,0.12);
+      --red:          #FF4D4D;
+      --red-surface:  rgba(255,77,77,0.12);
+      --bg:     #060B14;
+      --bg2:    rgba(255,255,255,0.03);
+      --bg3:    rgba(255,255,255,0.06);
+      --text:   #FFFFFF;
+      --muted:  rgba(255,255,255,0.45);
+      --subtle: rgba(255,255,255,0.2);
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.15);
+      --f: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --r-sm: 8px; --r-md: 12px; --r-lg: 18px; --r-xl: 20px; --r-pill: 980px;
+    }
+    body { background:var(--bg); color:var(--text); font-family:var(--f); -webkit-font-smoothing:antialiased; overflow-x:hidden; min-height:100vh; }
+
+    .bg-blobs { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .blob { position:absolute; border-radius:50%; filter:blur(90px); }
+    .blob-1 { width:600px; height:600px; background:var(--blue); top:-150px; left:-100px; opacity:0.18; }
+    .blob-2 { width:500px; height:500px; background:var(--green); top:400px; right:-150px; opacity:0.1; }
+    .blob-3 { width:450px; height:450px; background:#1A3A8A; bottom:-100px; left:30%; opacity:0.15; }
+
+    .container { max-width:1100px; margin:0 auto; padding:2.5rem 1.5rem; position:relative; z-index:1; }
+
+    /* Header */
+    .site-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:2.5rem; padding-bottom:1.5rem; border-bottom:0.5px solid var(--border); }
+    .logo { font-size:26px; font-weight:800; letter-spacing:-0.8px; }
+    .logo span { background:linear-gradient(90deg,var(--yellow),#FFB800); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .header-tag { font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
+    .badge { font-size:11px; font-weight:600; padding:5px 12px; border-radius:var(--r-pill); }
+    .bad-yellow { background:var(--yellow-surface); color:var(--yellow); border:0.5px solid rgba(255,224,0,0.3); }
+    .bad-blue   { background:var(--blue-surface);   color:#7FB4F0; border:0.5px solid rgba(26,111,212,0.3); }
+    .bad-green  { background:var(--green-surface);  color:#5DD98A; border:0.5px solid rgba(29,184,105,0.3); }
+
+    /* Layout */
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media (max-width:768px) { .grid-2 { grid-template-columns:1fr; } }
+    .grid-2-inner { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+    /* Cards */
+    .card { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r-lg); padding:1.25rem; margin-bottom:12px; transition:border-color 0.2s; }
+    .card:hover { border-color:rgba(26,111,212,0.25); }
+    .card-blue  { background:linear-gradient(135deg,rgba(26,111,212,0.25),rgba(13,78,166,0.35)); border:0.5px solid rgba(26,111,212,0.4); border-radius:var(--r-lg); padding:1.25rem; margin-bottom:12px; box-shadow:0 0 40px var(--blue-glow); }
+    .card-green { background:var(--green-surface); border:0.5px solid rgba(29,184,105,0.4); border-radius:var(--r-lg); padding:1.25rem; margin-bottom:12px; }
+    .card-red   { background:var(--red-surface);   border:0.5px solid rgba(255,77,77,0.4);   border-radius:var(--r-lg); padding:1.25rem; margin-bottom:12px; }
+    .card-dashed { background:var(--bg2); border:0.5px dashed var(--border-strong); border-radius:var(--r-lg); padding:1.25rem; margin-bottom:12px; }
+
+    /* Perfil tabs */
+    .tab-row { display:flex; gap:8px; margin-bottom:12px; }
+    .tab-btn { flex:1; padding:9px; border-radius:var(--r-md); border:0.5px solid var(--border); cursor:pointer; font-family:var(--f); font-weight:700; font-size:0.8rem; transition:all 0.15s; }
+    .tab-btn.active { background:var(--blue); color:white; border-color:var(--blue); box-shadow:0 0 16px var(--blue-glow); }
+    .tab-btn.inactive { background:var(--bg3); color:var(--muted); }
+
+    /* Typography */
+    .section-title { font-size:0.78rem; font-weight:700; color:var(--text); margin-bottom:12px; letter-spacing:-0.1px; }
+    .label { font-size:0.72rem; font-weight:500; color:var(--muted); }
+    .value-badge { font-size:0.85rem; font-weight:700; color:var(--yellow); white-space:nowrap; }
+    .section-sep { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:rgba(255,255,255,0.2); margin-bottom:8px; margin-top:4px; }
+
+    /* Sliders */
+    .slider-row { margin-bottom:14px; }
+    .slider-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; }
+    .slider-limits { display:flex; justify-content:space-between; font-size:0.6rem; color:rgba(255,255,255,0.2); margin-top:2px; }
+    input[type=range] { -webkit-appearance:none; width:100%; height:3px; border-radius:2px; background:rgba(255,255,255,0.1); outline:none; cursor:pointer; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--yellow); cursor:pointer; box-shadow:0 0 8px var(--yellow-glow); }
+    input[type=range]::-moz-range-thumb { width:16px; height:16px; border-radius:50%; background:var(--yellow); cursor:pointer; border:none; }
+
+    /* Toggle */
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.03); border:0.5px solid var(--border); border-radius:var(--r-md); padding:10px 12px; margin-bottom:10px; }
+    .toggle-label { font-size:0.72rem; font-weight:500; color:var(--muted); }
+    .toggle-btn { position:relative; width:44px; height:24px; border-radius:var(--r-pill); border:none; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+    .toggle-btn .knob { position:absolute; top:4px; width:16px; height:16px; background:white; border-radius:50%; transition:left 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.4); }
+
+    /* KPI */
+    .kpi-box { background:rgba(255,255,255,0.04); border:0.5px solid var(--border); border-radius:var(--r-md); padding:12px; }
+    .kpi-label { font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:2px; }
+    .kpi-value { font-size:1.05rem; font-weight:800; line-height:1.2; letter-spacing:-0.3px; }
+    .kpi-sub { font-size:0.6rem; color:var(--muted); margin-top:2px; }
+    .kpi-box-blue { background:rgba(255,255,255,0.06); border:0.5px solid rgba(255,255,255,0.08); border-radius:var(--r-md); padding:12px; }
+    .kpi-label-blue { font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.35); margin-bottom:2px; }
+    .kpi-sub-blue { font-size:0.6rem; color:rgba(255,255,255,0.35); margin-top:2px; }
+
+    /* Verdict */
+    .verdict { text-align:center; padding:0.5rem 0; }
+    .verdict-icon { font-size:2.2rem; margin-bottom:6px; }
+    .verdict-title { font-size:1.15rem; font-weight:800; letter-spacing:-0.5px; }
+    .verdict-sub { font-size:0.72rem; margin-top:5px; }
+
+    /* Cost boxes */
+    .cost-box-red   { background:var(--red-surface);   border:0.5px solid rgba(255,77,77,0.25);   border-radius:var(--r-md); padding:12px; text-align:center; }
+    .cost-box-green { background:var(--green-surface); border:0.5px solid rgba(29,184,105,0.25); border-radius:var(--r-md); padding:12px; text-align:center; }
+
+    /* Chart */
+    .chart-note { font-size:0.6rem; color:var(--muted); text-align:center; margin-top:6px; }
+
+    /* Detail / info table */
+    .detail-row { display:flex; justify-content:space-between; font-size:0.78rem; padding:5px 0; border-bottom:0.5px solid var(--border); }
+    .detail-row:last-child { border-bottom:none; }
+    .detail-key { color:var(--muted); }
+    .detail-val { font-weight:600; color:var(--text); }
+
+    .info-table { width:100%; border-collapse:collapse; font-size:0.75rem; }
+    .info-table tr { border-bottom:0.5px solid var(--border); }
+    .info-table tr:last-child { border-bottom:none; }
+    .info-table td { padding:6px 4px; vertical-align:top; }
+    .info-table td:first-child { color:var(--muted); width:50%; padding-right:12px; }
+    .info-table td:last-child { font-weight:600; color:var(--text); text-align:right; }
+    .info-table .section-header td { padding-top:10px; padding-bottom:2px; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:rgba(255,255,255,0.2); }
+    .info-table .highlight td:last-child { color:#5DD98A; }
+    .info-table .tag { display:inline-block; background:var(--blue-surface); color:#7FB4F0; border-radius:5px; padding:1px 6px; font-size:0.65rem; font-weight:600; margin:1px 2px 1px 0; border:0.5px solid rgba(26,111,212,0.3); }
+
+    /* Investment rows */
+    .inv-row { display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-radius:var(--r-sm); margin-bottom:4px; }
+    .inv-row-sub { background:rgba(255,255,255,0.04); }
+    .inv-row-total { background:var(--blue-surface); border:0.5px solid rgba(26,111,212,0.3); margin-top:4px; }
+    .inv-label { font-size:0.75rem; color:var(--muted); }
+    .inv-label-total { font-size:0.8rem; font-weight:700; color:#7FB4F0; }
+    .inv-val { font-size:0.8rem; font-weight:700; color:var(--text); }
+    .inv-val-total { font-size:0.9rem; font-weight:800; color:#7FB4F0; }
+
+    /* Collapsible */
+    .collapsible-header { display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; }
+    .chevron { font-size:0.7rem; transition:transform 0.2s; display:inline-block; color:var(--muted); }
+    .chevron.open { transform:rotate(180deg); }
+    .collapsible-body { overflow:hidden; transition:max-height 0.3s ease; }
+
+    /* Glow line */
+    .glow-line { height:1px; background:linear-gradient(90deg,transparent,var(--blue),var(--yellow),var(--green),transparent); opacity:0.4; margin:0.5rem 0 1rem; }
+
+    /* Alert */
+    .alert { border-radius:var(--r-md); padding:10px 14px; margin-bottom:8px; font-size:0.75rem; display:flex; align-items:flex-start; gap:8px; line-height:1.5; }
+    .al-yellow { background:var(--yellow-surface); border:0.5px solid rgba(255,224,0,0.25); color:rgba(255,224,0,0.85); }
+    .al-blue   { background:var(--blue-surface); border:0.5px solid rgba(26,111,212,0.3); color:#7FB4F0; }
+  </style>
+</head>
+<body>
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+const PROD_FACTOR = 1600;
+
+function calcNPV(cfs, rate) {
+  return cfs.reduce((s, cf, t) => s + cf / Math.pow(1 + rate, t), 0);
+}
+function calcIRR(cfs) {
+  const npv = r => cfs.reduce((s, cf, t) => s + cf / Math.pow(1 + r, t), 0);
+  let a = -0.9999, b = 10;
+  if (Math.sign(npv(a)) === Math.sign(npv(b))) return null;
+  for (let i = 0; i < 1200; i++) {
+    const m = (a + b) / 2, v = npv(m);
+    if (Math.abs(v) < 0.1) return m;
+    Math.sign(npv(a)) === Math.sign(v) ? (a = m) : (b = m);
+  }
+  return (a + b) / 2;
+}
+function clp(v) {
+  return new Intl.NumberFormat('es-CL', { style:'currency', currency:'CLP', maximumFractionDigits:0 }).format(Math.round(v));
+}
+function clpM(v) {
+  const abs = Math.abs(v), sign = v < 0 ? '-' : '';
+  if (abs >= 1e9) return `${sign}${(abs/1e9).toFixed(1)} MM`;
+  if (abs >= 1e6) return `${sign}${(abs/1e6).toFixed(1)} M`;
+  return clp(v);
+}
+
+function calcProject(p) {
+  const { costoKwh, precioVentaNB, pctUso, puedeInyectar, costoKwpInst, tamanoKwp,
+          consumoAnual, tieneBateria, costoKwhBat, tamanoBat, durBat, durEval, tasaDesc,
+          tieneInversor, costoKwpInversor, usaPrecioPromedio, precioPromedio } = p;
+  const prodAnual = tamanoKwp * PROD_FACTOR;
+  let autoconsumoDirecto, excedenteBase, consumoNoche;
+  if (puedeInyectar) {
+    autoconsumoDirecto = Math.min(prodAnual * (pctUso / 100), consumoAnual);
+    excedenteBase      = prodAnual - autoconsumoDirecto;
+    consumoNoche       = consumoAnual - autoconsumoDirecto;
+  } else {
+    const consumoDuranteProduccion = consumoAnual * (pctUso / 100);
+    consumoNoche       = consumoAnual - consumoDuranteProduccion;
+    autoconsumoDirecto = Math.min(prodAnual, consumoDuranteProduccion);
+    excedenteBase      = Math.max(0, prodAnual - consumoDuranteProduccion);
+  }
+  let ahorroExtraBat = 0, energiaBatAnual = 0, batSuministradaAnual = 0;
+  if (tieneBateria) {
+    const excDia = excedenteBase / 365;
+    const batDia = Math.min(excDia, tamanoBat);
+    energiaBatAnual = batDia * 365;
+    batSuministradaAnual = Math.min(energiaBatAnual, consumoNoche);
+    ahorroExtraBat = batSuministradaAnual * costoKwh;
+    excedenteBase = Math.max(0, excedenteBase - energiaBatAnual);
+  }
+  const ingresoNB = puedeInyectar ? excedenteBase * precioVentaNB : 0;
+  const ahorroAutoconsumo = autoconsumoDirecto * costoKwh;
+  const ahorroAnual = ahorroAutoconsumo + ahorroExtraBat + ingresoNB;
+  const invInst = tamanoKwp * costoKwpInst;
+  const invInversor = tieneInversor ? tamanoKwp * costoKwpInversor : 0;
+  const invBat = tieneBateria ? tamanoBat * costoKwhBat : 0;
+  const invTotal = invInst + invInversor + invBat;
+  const cfs = [-invTotal];
+  for (let t = 1; t <= durEval; t++) {
+    let f = ahorroAnual;
+    if (tieneBateria && durBat > 0 && t % durBat === 0 && t < durEval) f -= invBat;
+    cfs.push(f);
+  }
+  const tasa = tasaDesc / 100;
+  const vpn = calcNPV(cfs, tasa);
+  const irr = calcIRR(cfs);
+  const tarifaBoleta = usaPrecioPromedio ? precioPromedio : costoKwh;
+  const costoAnualAntes = consumoAnual * tarifaBoleta;
+  const costoMensualAntes = costoAnualAntes / 12;
+  let costoAnualDespues, costoMensualDespues;
+  if (usaPrecioPromedio) {
+    costoAnualDespues = Math.max(0, costoAnualAntes - ahorroAnual);
+    costoMensualDespues = costoAnualDespues / 12;
+  } else {
+    const consumoGridAnual = consumoAnual - autoconsumoDirecto - batSuministradaAnual;
+    costoAnualDespues = Math.max(0, consumoGridAnual * costoKwh - ingresoNB);
+    costoMensualDespues = costoAnualDespues / 12;
+  }
+  const payback = ahorroAnual > 0 ? invTotal / ahorroAnual : null;
+  const flujoCum = cfs.reduce((acc, cf) => { acc.push((acc.length ? acc[acc.length-1] : 0) + cf); return acc; }, []);
+  return { prodAnual, consumoNoche, autoconsumoDirecto, excedenteFinal: excedenteBase, ingresoNB,
+           ahorroAutoconsumo, ahorroExtraBat, ahorroAnual, batSuministradaAnual,
+           invTotal, invInst, invInversor, invBat, costoAnualAntes, costoAnualDespues,
+           cfs, flujoCum, vpn, irr, costoMensualAntes, costoMensualDespues, payback };
+}
+
+function SliderInput({ label, value, onChange, min, max, step, fmt }) {
+  return (
+    <div className="slider-row">
+      <div className="slider-header">
+        <span className="label" style={{maxWidth:'65%',lineHeight:'1.3'}}>{label}</span>
+        <span className="value-badge">{fmt ? fmt(value) : value}</span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={value}
+        onChange={e => onChange(parseFloat(e.target.value))} />
+      <div className="slider-limits">
+        <span>{fmt ? fmt(min) : min}</span>
+        <span>{fmt ? fmt(max) : max}</span>
+      </div>
+    </div>
+  );
+}
+
+function Toggle({ label, value, onChange }) {
+  return (
+    <div className="toggle-row">
+      <span className="toggle-label">{label}</span>
+      <button className="toggle-btn" onClick={() => onChange(!value)}
+        style={{ background: value ? 'var(--blue)' : 'rgba(255,255,255,0.12)', boxShadow: value ? '0 0 12px var(--blue-glow)' : 'none' }}>
+        <span className="knob" style={{ left: value ? '24px' : '4px' }} />
+      </button>
+    </div>
+  );
+}
+
+function KPI({ label, value, sub, color = 'gray' }) {
+  const colors = {
+    blue:'#7FB4F0', green:'#5DD98A', red:'#FF7070', yellow:'var(--yellow)', gray:'var(--muted)', emerald:'#5DD98A'
+  };
+  return (
+    <div className="kpi-box">
+      <div className="kpi-label">{label}</div>
+      <div className="kpi-value" style={{ color: colors[color] }}>{value}</div>
+      {sub && <div className="kpi-sub">{sub}</div>}
+    </div>
+  );
+}
+
+const DEFAULTS_CASA       = { costoKwh: 225, precioVentaNB: 105, tamanoKwp: 10, pctUso: 25, consumoAnual: 9000 };
+const DEFAULTS_INDUSTRIAL = { costoKwh: 190, precioVentaNB: 95,  tamanoKwp: 30, pctUso: 40, consumoAnual: 60000 };
+const DEFAULTS = {
+  tipoPerfil: 'casa',
+  costoKwh: 225, precioVentaNB: 105, pctUso: 25, puedeInyectar: true,
+  usaPrecioPromedio: false, precioPromedio: 190,
+  costoKwpInst: 900000, tamanoKwp: 10, consumoAnual: 9000,
+  tieneInversor: false, costoKwpInversor: 150000,
+  tieneBateria: false, costoKwhBat: 400000, tamanoBat: 10,
+  durBat: 10, durEval: 20, usaTasaDesc: false, tasaDesc: 8,
+};
+
+function App() {
+  const [p, setP] = useState(DEFAULTS);
+  const set = (k, v) => setP(prev => ({ ...prev, [k]: v }));
+  const r = useMemo(() => calcProject(p), [p]);
+  const [costOpen, setCostOpen] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [editingConsumo, setEditingConsumo] = useState(false);
+
+  const switchPerfil = (perfil) => {
+    const vals = perfil === 'casa' ? DEFAULTS_CASA : DEFAULTS_INDUSTRIAL;
+    setP(prev => ({ ...prev, tipoPerfil: perfil, ...vals }));
+  };
+
+  const irrPct = r.irr !== null ? r.irr * 100 : null;
+  const rentable = p.usaTasaDesc
+    ? (r.vpn > 0 && r.irr !== null && r.irr > p.tasaDesc / 100)
+    : (r.irr !== null && r.irr > 0);
+  const reductionPct = r.costoMensualAntes > 0
+    ? Math.round((1 - r.costoMensualDespues / r.costoMensualAntes) * 100) : 0;
+
+  const SVG_H = 80;
+  const chartMaxPos = Math.max(0, ...r.flujoCum);
+  const chartMinNeg = Math.min(0, ...r.flujoCum);
+  const chartRange  = chartMaxPos - chartMinNeg || 1;
+  const zeroY = (chartMaxPos / chartRange) * SVG_H;
+  const showLabel = i => i === 0 || i === p.durEval || i % Math.ceil(p.durEval / 5) === 0;
+
+  const fmtKCLP = v => `$${(v/1000).toFixed(0)}K`;
+  const fmtCLP1 = v => `$${v.toLocaleString('es-CL')}`;
+
+  return (
+    <div className="container">
+      {/* Header */}
+      <div className="site-header">
+        <div>
+          <div className="logo">Era <span>Solar</span></div>
+          <div className="header-tag">Evaluador de proyectos · Chile</div>
+        </div>
+        <div style={{display:'flex',gap:'8px',flexWrap:'wrap',justifyContent:'flex-end'}}>
+          <span className="badge bad-yellow">⚡ Factor 1.600 kWh/kWp</span>
+          <span className="badge bad-blue">Valores en CLP</span>
+        </div>
+      </div>
+
+      <div className="grid-2">
+        {/* ── LEFT: Inputs ── */}
+        <div>
+          {/* Perfil */}
+          <div className="tab-row">
+            {['casa','industrial'].map(t => (
+              <button key={t} onClick={() => switchPerfil(t)}
+                className={`tab-btn ${p.tipoPerfil===t ? 'active' : 'inactive'}`}>
+                {t === 'casa' ? '🏠 Casa' : '🏭 Industrial'}
+              </button>
+            ))}
+          </div>
+
+          {/* Tarifa */}
+          <div className="card">
+            <div className="section-title">⚡ Tarifa Eléctrica</div>
+            <SliderInput
+              label={p.usaPrecioPromedio ? "Tarifa variable — ahorro por kWh (CLP/kWh)" : "Costo energía (CLP/kWh)"}
+              value={p.costoKwh}
+              onChange={v => set('costoKwh', v)} min={50} max={350} step={1} fmt={fmtCLP1} />
+            <Toggle label="Separar tarifa variable y precio boleta"
+              value={p.usaPrecioPromedio} onChange={v => set('usaPrecioPromedio', v)} />
+            {p.usaPrecioPromedio && (
+              <SliderInput label="Precio promedio boleta (CLP/kWh, incluye cargos fijos)" value={p.precioPromedio}
+                onChange={v => set('precioPromedio', v)} min={50} max={400} step={1} fmt={fmtCLP1} />
+            )}
+            <Toggle label="Permite inyección a la red (Netbilling)"
+              value={p.puedeInyectar} onChange={v => set('puedeInyectar', v)} />
+            {p.puedeInyectar && (
+              <SliderInput label="Precio venta Netbilling (CLP/kWh)" value={p.precioVentaNB}
+                onChange={v => set('precioVentaNB', v)} min={50} max={130} step={1} fmt={fmtCLP1} />
+            )}
+          </div>
+
+          {/* Instalación */}
+          <div className="card">
+            <div className="section-title">☀️ Instalación Solar</div>
+            <SliderInput label="Tamaño instalación (kWp)" value={p.tamanoKwp}
+              onChange={v => set('tamanoKwp', v)} min={5} max={200} step={1}
+              fmt={v => `${v} kWp`} />
+            <SliderInput
+              label={p.puedeInyectar ? "% autoconsumo sobre generación" : "% del consumo en horario solar"}
+              value={p.pctUso}
+              onChange={v => set('pctUso', v)} min={0} max={100} step={1}
+              fmt={v => `${v}%`} />
+          </div>
+
+          {/* Consumo */}
+          <div className="card">
+            <div className="section-title">🏭 Consumo Anual</div>
+            <div className="slider-row">
+              <div className="slider-header">
+                <span className="label">Consumo anual (kWh/año)</span>
+                {editingConsumo
+                  ? <input autoFocus type="number" defaultValue={p.consumoAnual}
+                      onBlur={e => { const v=parseInt(e.target.value); if(!isNaN(v)&&v>=1000) set('consumoAnual',v); setEditingConsumo(false); }}
+                      onKeyDown={e => { if(e.key==='Enter'){ const v=parseInt(e.target.value); if(!isNaN(v)&&v>=1000) set('consumoAnual',v); setEditingConsumo(false);} if(e.key==='Escape') setEditingConsumo(false); }}
+                      style={{width:'120px',textAlign:'right',fontWeight:700,fontSize:'0.82rem',color:'var(--yellow)',background:'rgba(255,255,255,0.06)',border:'0.5px solid rgba(255,224,0,0.4)',borderRadius:'6px',padding:'2px 8px',outline:'none',fontFamily:'var(--f)',color:'var(--yellow)'}} />
+                  : <span className="value-badge" style={{cursor:'pointer',borderBottom:'1px dashed rgba(255,224,0,0.4)'}}
+                      title="Clic para editar"
+                      onClick={() => setEditingConsumo(true)}>
+                      {p.consumoAnual.toLocaleString('es-CL')} kWh ✎
+                    </span>
+                }
+              </div>
+              <input type="range" min={5000} max={500000} step={1000} value={p.consumoAnual}
+                onChange={e => set('consumoAnual', parseFloat(e.target.value))} />
+              <div className="slider-limits"><span>5.000 kWh</span><span>500.000 kWh</span></div>
+            </div>
+          </div>
+
+          {/* Batería */}
+          <div className="card">
+            <div className="section-title">🔋 Sistema de Batería</div>
+            <Toggle label="Incluir sistema de baterías"
+              value={p.tieneBateria} onChange={v => set('tieneBateria', v)} />
+            {p.tieneBateria && (<>
+              <SliderInput label="Tamaño batería (kWh)" value={p.tamanoBat}
+                onChange={v => set('tamanoBat', v)} min={3} max={100} step={1} fmt={v => `${v} kWh`} />
+              <SliderInput label="Costo batería (CLP/kWh)" value={p.costoKwhBat}
+                onChange={v => set('costoKwhBat', v)} min={100000} max={1200000} step={10000} fmt={fmtKCLP} />
+              <SliderInput label="Duración batería (años)" value={p.durBat}
+                onChange={v => set('durBat', v)} min={5} max={20} step={1} fmt={v => `${v} años`} />
+            </>)}
+          </div>
+
+          {/* Financiero */}
+          <div className="card">
+            <div className="section-title">📊 Parámetros Financieros</div>
+            <SliderInput label="Duración evaluación (años)" value={p.durEval}
+              onChange={v => set('durEval', v)} min={5} max={30} step={1} fmt={v => `${v} años`} />
+            <Toggle label="Usar tasa de descuento (VPN)"
+              value={p.usaTasaDesc} onChange={v => set('usaTasaDesc', v)} />
+            {p.usaTasaDesc && (
+              <SliderInput label="Tasa de descuento (%)" value={p.tasaDesc}
+                onChange={v => set('tasaDesc', v)} min={1} max={30} step={0.5} fmt={v => `${v}%`} />
+            )}
+          </div>
+
+          {/* Costos equipos */}
+          <div className="card-dashed">
+            <div className="collapsible-header" onClick={() => setAdvancedOpen(o => !o)}>
+              <span style={{fontSize:'0.75rem',color:'rgba(255,255,255,0.3)',fontWeight:600}}>⚙️ Costos de equipos</span>
+              <span className={`chevron ${advancedOpen ? 'open' : ''}`}>▼</span>
+            </div>
+            <div className="collapsible-body" style={{maxHeight: advancedOpen ? '400px' : '0'}}>
+              <div style={{paddingTop:'12px'}}>
+                <SliderInput label="Costo paneles (CLP/kWp)" value={p.costoKwpInst}
+                  onChange={v => set('costoKwpInst', v)} min={300000} max={1500000} step={10000} fmt={fmtKCLP} />
+                <Toggle label="Incluir inversor en la inversión"
+                  value={p.tieneInversor} onChange={v => set('tieneInversor', v)} />
+                {p.tieneInversor && (
+                  <SliderInput label="Costo inversor (CLP/kWp)" value={p.costoKwpInversor}
+                    onChange={v => set('costoKwpInversor', v)} min={50000} max={500000} step={10000} fmt={fmtKCLP} />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── RIGHT: Results ── */}
+        <div>
+          {/* Veredicto */}
+          <div className={rentable ? 'card-green' : 'card-red'} style={{marginBottom:'12px'}}>
+            <div className="verdict">
+              <div className="verdict-icon">{rentable ? '✅' : '❌'}</div>
+              <div className="verdict-title" style={{color: rentable ? '#5DD98A' : '#FF7070'}}>
+                Proyecto {rentable ? 'RENTABLE' : 'NO RENTABLE'}
+              </div>
+              <div className="verdict-sub" style={{color: rentable ? 'rgba(93,217,138,0.7)' : 'rgba(255,112,112,0.7)'}}>
+                {p.usaTasaDesc
+                  ? (rentable
+                    ? `TIR ${irrPct?.toFixed(1)}% supera la tasa de descuento del ${p.tasaDesc}%`
+                    : r.irr === null
+                      ? 'El proyecto no alcanza a recuperar la inversión'
+                      : `TIR ${irrPct?.toFixed(1)}% no supera la tasa de descuento del ${p.tasaDesc}%`)
+                  : (r.irr === null
+                    ? 'El proyecto no alcanza a recuperar la inversión'
+                    : `TIR: ${irrPct?.toFixed(1)}%  ·  Inversión: ${clpM(r.invTotal)}`)}
+              </div>
+            </div>
+          </div>
+
+          {/* Resumen técnico */}
+          {(() => {
+            const tipoTags = ['Paneles'];
+            if (p.puedeInyectar) tipoTags.push('Inyección'); else tipoTags.push('Autoconsumo');
+            if (p.tieneBateria) tipoTags.push('Batería');
+            const pctAutoconsumo = r.prodAnual > 0 ? Math.round(r.autoconsumoDirecto / r.prodAnual * 100) : 0;
+            const pctInyectada   = r.prodAnual > 0 ? Math.round(r.excedenteFinal / r.prodAnual * 100) : 0;
+            const pctBateria     = r.prodAnual > 0 ? Math.round(r.batSuministradaAnual / r.prodAnual * 100) : 0;
+            return (
+              <div className="card" style={{marginBottom:'12px'}}>
+                <div className="collapsible-header" onClick={() => setInfoOpen(o => !o)}>
+                  <div className="section-title" style={{marginBottom:0}}>📋 Resumen técnico</div>
+                  <span className={`chevron ${infoOpen ? 'open' : ''}`}>▼</span>
+                </div>
+                <div className="collapsible-body" style={{maxHeight: infoOpen ? '600px' : '0'}}>
+                  <div style={{marginTop:'12px'}}>
+                    <table className="info-table">
+                      <tbody>
+                        <tr className="section-header"><td colSpan="2">Consumo</td></tr>
+                        <tr><td>Consumo anual</td><td>{p.consumoAnual.toLocaleString('es-CL')} kWh/año</td></tr>
+                        <tr><td>Gasto anual (antes)</td><td>{clp(r.costoAnualAntes)} /año</td></tr>
+                        <tr className="section-header"><td colSpan="2">Instalación</td></tr>
+                        <tr><td>Generación estimada</td><td>{PROD_FACTOR.toLocaleString('es-CL')} kWh/kWp</td></tr>
+                        <tr><td>Tipo de instalación</td><td>{tipoTags.map((t,i) => <span key={i} className="tag">{t}</span>)}</td></tr>
+                        <tr className="section-header"><td colSpan="2">Energía</td></tr>
+                        <tr><td>Energía generada</td><td>{Math.round(r.prodAnual).toLocaleString('es-CL')} kWh/año</td></tr>
+                        <tr><td>Energía autoconsumida ({pctAutoconsumo}%)</td><td>{Math.round(r.autoconsumoDirecto).toLocaleString('es-CL')} kWh/año</td></tr>
+                        {p.tieneBateria && r.batSuministradaAnual > 0 && (
+                          <tr><td>Energía vía batería ({pctBateria}%)</td><td>{Math.round(r.batSuministradaAnual).toLocaleString('es-CL')} kWh/año</td></tr>
+                        )}
+                        {p.puedeInyectar && r.excedenteFinal > 0 && (
+                          <tr><td>Energía inyectada ({pctInyectada}%)</td><td>{Math.round(r.excedenteFinal).toLocaleString('es-CL')} kWh/año</td></tr>
+                        )}
+                        <tr className="section-header"><td colSpan="2">Ahorro</td></tr>
+                        <tr className="highlight"><td>Ahorro total anual</td><td>{clp(r.ahorroAnual)} /año</td></tr>
+                        <tr><td>Ahorro por autoconsumo</td><td>{clp(r.ahorroAutoconsumo)} /año</td></tr>
+                        {p.tieneBateria && r.ahorroExtraBat > 0 && (
+                          <tr><td>Ahorro por batería</td><td>{clp(r.ahorroExtraBat)} /año</td></tr>
+                        )}
+                        {p.puedeInyectar && r.ingresoNB > 0 && (
+                          <tr><td>Ahorro por inyección</td><td>{clp(r.ingresoNB)} /año</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* KPIs financieros */}
+          <div className="card-blue" style={{marginBottom:'12px'}}>
+            <div style={{fontSize:'0.65rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',color:'rgba(127,180,240,0.6)',marginBottom:'10px'}}>
+              Indicadores Financieros
+            </div>
+            {p.usaTasaDesc ? (
+              <div className="grid-2-inner" style={{marginBottom:'10px'}}>
+                <div className="kpi-box-blue">
+                  <div className="kpi-label-blue">VPN</div>
+                  <div className="kpi-value" style={{color: r.vpn >= 0 ? '#5DD98A' : '#FF7070'}}>
+                    {r.vpn >= 0 ? '+' : ''}{clpM(r.vpn)}
+                  </div>
+                  <div className="kpi-sub-blue">Valor presente neto</div>
+                </div>
+                <div className="kpi-box-blue">
+                  <div className="kpi-label-blue">TIR</div>
+                  <div className="kpi-value" style={{color: irrPct !== null && irrPct > p.tasaDesc ? '#5DD98A' : '#FF7070'}}>
+                    {irrPct !== null ? `${irrPct.toFixed(1)}%` : 'N/A'}
+                  </div>
+                  <div className="kpi-sub-blue">Tasa interna de retorno</div>
+                </div>
+              </div>
+            ) : (
+              <div className="kpi-box-blue" style={{marginBottom:'10px'}}>
+                <div className="kpi-label-blue">TIR</div>
+                <div className="kpi-value" style={{fontSize:'1.5rem',letterSpacing:'-1px', color: irrPct !== null && irrPct > 0 ? '#5DD98A' : '#FF7070'}}>
+                  {irrPct !== null ? `${irrPct.toFixed(1)}%` : 'N/A'}
+                </div>
+                <div className="kpi-sub-blue">Tasa interna de retorno · Payback: {r.payback !== null ? `${r.payback.toFixed(1)} años` : 'N/A'}</div>
+              </div>
+            )}
+            <div className="kpi-box-blue">
+              <div className="kpi-label-blue">Ahorro Anual Estimado</div>
+              <div className="kpi-value" style={{fontSize:'1.35rem',letterSpacing:'-0.5px',color:'var(--yellow)'}}>{clp(r.ahorroAnual)}</div>
+              <div className="kpi-sub-blue">{clp(r.ahorroAnual / 12)} / mes promedio</div>
+            </div>
+          </div>
+
+          {/* Costo eléctrico */}
+          <div className="card">
+            <div className="collapsible-header" onClick={() => setCostOpen(o => !o)}>
+              <div className="section-title" style={{marginBottom:0}}>💡 Costo Eléctrico</div>
+              <span className={`chevron ${costOpen ? 'open' : ''}`}>▼</span>
+            </div>
+            {p.usaPrecioPromedio && (
+              <div className="alert al-yellow" style={{marginTop:'10px'}}>
+                ⚡ Boleta calculada a precio promedio (${p.precioPromedio}/kWh). Ahorro calculado a tarifa variable (${p.costoKwh}/kWh).
+              </div>
+            )}
+            <div className="grid-2-inner" style={{marginTop:'12px',marginBottom:'10px'}}>
+              <div className="cost-box-red">
+                <div style={{fontSize:'0.6rem',fontWeight:700,color:'rgba(255,77,77,0.7)',textTransform:'uppercase',marginBottom:'2px'}}>Antes · mes</div>
+                <div style={{fontSize:'1.1rem',fontWeight:800,color:'#FF7070'}}>{clp(r.costoMensualAntes)}</div>
+                <div style={{fontSize:'0.6rem',color:'rgba(255,112,112,0.5)',marginTop:'2px'}}>año: {clp(r.costoAnualAntes)}</div>
+              </div>
+              <div className="cost-box-green">
+                <div style={{fontSize:'0.6rem',fontWeight:700,color:'rgba(29,184,105,0.7)',textTransform:'uppercase',marginBottom:'2px'}}>Después · mes</div>
+                <div style={{fontSize:'1.1rem',fontWeight:800,color:'#5DD98A'}}>{clp(r.costoMensualDespues)}</div>
+                <div style={{fontSize:'0.6rem',color:'rgba(93,217,138,0.5)',marginTop:'2px'}}>año: {clp(r.costoAnualDespues)}</div>
+              </div>
+            </div>
+            {reductionPct > 0 && (
+              <div style={{background:'rgba(255,255,255,0.04)',border:'0.5px solid var(--border)',borderRadius:'var(--r-md)',padding:'7px 12px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <span style={{fontSize:'0.72rem',color:'var(--muted)'}}>Reducción mensual</span>
+                <span style={{fontSize:'0.82rem',fontWeight:700,color:'#5DD98A'}}>
+                  {clp(r.costoMensualAntes - r.costoMensualDespues)} ({reductionPct}%)
+                </span>
+              </div>
+            )}
+            <div className="collapsible-body" style={{maxHeight: costOpen ? '300px' : '0'}}>
+              <div style={{marginTop:'12px',borderTop:'0.5px solid var(--border)',paddingTop:'12px'}}>
+                <div style={{fontSize:'0.65rem',fontWeight:700,color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'8px'}}>Desglose ahorro anual</div>
+                <div className="inv-row inv-row-sub">
+                  <span className="inv-label">Ahorro por autoconsumo</span>
+                  <span className="inv-val" style={{color:'#5DD98A'}}>{clp(r.ahorroAutoconsumo)}</span>
+                </div>
+                {p.tieneBateria && (
+                  <div className="inv-row inv-row-sub">
+                    <span className="inv-label">Ahorro extra batería</span>
+                    <span className="inv-val" style={{color:'#5DD98A'}}>{clp(r.ahorroExtraBat)}</span>
+                  </div>
+                )}
+                {p.puedeInyectar && r.ingresoNB > 0 && (
+                  <div className="inv-row inv-row-sub">
+                    <span className="inv-label">Ingreso Netbilling ({Math.round(r.excedenteFinal).toLocaleString('es-CL')} kWh)</span>
+                    <span className="inv-val" style={{color:'#5DD98A'}}>{clp(r.ingresoNB)}</span>
+                  </div>
+                )}
+                <div className="inv-row" style={{background:'var(--green-surface)',border:'0.5px solid rgba(29,184,105,0.25)',borderRadius:'var(--r-sm)',marginTop:'4px'}}>
+                  <span style={{fontSize:'0.8rem',fontWeight:700,color:'#5DD98A'}}>Total ahorro anual</span>
+                  <span style={{fontSize:'0.9rem',fontWeight:800,color:'#5DD98A'}}>{clp(r.ahorroAnual)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Detalle del proyecto */}
+          <div className="card">
+            <div className="section-title">🔍 Detalle del Proyecto</div>
+            <div className="section-sep">Instalación</div>
+            <div className="grid-2-inner" style={{marginBottom:'12px'}}>
+              <KPI label="Tamaño" value={`${p.tamanoKwp} kWp`} color="yellow" />
+              <KPI label="Producción anual" value={`${Math.round(r.prodAnual).toLocaleString('es-CL')} kWh`} color="yellow" />
+              <KPI label="Autoconsumo directo" value={`${Math.round(r.autoconsumoDirecto).toLocaleString('es-CL')} kWh`} color="green" />
+              <KPI label="Payback simple" value={r.payback !== null ? `${r.payback.toFixed(1)} años` : 'N/A'} color="gray" />
+            </div>
+            <div className="section-sep">Inversión</div>
+            <div className="inv-row inv-row-sub">
+              <span className="inv-label">Paneles ({p.tamanoKwp} kWp × {clp(p.costoKwpInst)}/kWp)</span>
+              <span className="inv-val">{clpM(r.invInst)}</span>
+            </div>
+            {p.tieneInversor && (
+              <div className="inv-row inv-row-sub">
+                <span className="inv-label">Inversor ({p.tamanoKwp} kWp × {clp(p.costoKwpInversor)}/kWp)</span>
+                <span className="inv-val">{clpM(r.invInversor)}</span>
+              </div>
+            )}
+            {p.tieneBateria && (
+              <div className="inv-row inv-row-sub">
+                <span className="inv-label">Batería ({p.tamanoBat} kWh × {clp(p.costoKwhBat)}/kWh)</span>
+                <span className="inv-val">{clpM(r.invBat)}</span>
+              </div>
+            )}
+            <div className="inv-row inv-row-total">
+              <span className="inv-label-total">Total inversión</span>
+              <span className="inv-val-total">{clpM(r.invTotal)}</span>
+            </div>
+          </div>
+
+          {/* Chart */}
+          <div className="card">
+            <div className="section-title">📉 Flujo de Caja Acumulado</div>
+            <svg width="100%" height={SVG_H + 20} style={{display:'block',overflow:'visible'}}>
+              <line x1="0" y1={zeroY} x2="100%" y2={zeroY}
+                stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="3,3" />
+              {r.flujoCum.map((v, i) => {
+                const n = r.flujoCum.length;
+                const xPct = (i / n) * 100;
+                const wPct = (1 / n) * 100 - 0.3;
+                const barH = Math.max(2, (Math.abs(v) / chartRange) * SVG_H);
+                const barY = v >= 0 ? zeroY - barH : zeroY;
+                const fill = v >= 0 ? '#1DB869' : '#FF4D4D';
+                return (
+                  <g key={i}>
+                    <rect x={`${xPct}%`} y={barY} width={`${wPct}%`} height={barH}
+                      fill={fill} rx="1" opacity="0.85">
+                      <title>{`Año ${i}: ${clp(v)}`}</title>
+                    </rect>
+                    {showLabel(i) && (
+                      <text x={`${xPct + wPct/2}%`} y={SVG_H + 14}
+                        textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.25)">{i}</text>
+                    )}
+                  </g>
+                );
+              })}
+              <text x="1" y={zeroY - 2} fontSize="8" fill="rgba(255,255,255,0.25)">$0</text>
+            </svg>
+            <div className="chart-note">Verde = positivo · Rojo = negativo · Pasa el cursor sobre cada barra para ver el valor</div>
+          </div>
+
+          <div className="glow-line"></div>
+          <div className="alert al-blue">
+            ◎ &nbsp;<span>Factor de producción estándar Chile central: <strong>1.600 kWh/kWp/año</strong>. Los resultados son estimativos.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
