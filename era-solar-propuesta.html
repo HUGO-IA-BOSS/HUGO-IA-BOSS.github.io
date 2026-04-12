@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Era Solar — Propuesta Comercial</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --yellow:#FFB800;
+  --blue:#1A6FD4;
+  --green:#14A85A;
+  --red:#E02020;
+  --ink:#0C1220;
+  --ink2:#3A4558;
+  --ink3:#7A869A;
+  --bg:#F7F8FA;
+  --line:#E2E6ED;
+  --f:'Plus Jakarta Sans',system-ui,sans-serif;
+}
+body{background:var(--bg);font-family:var(--f);color:var(--ink);-webkit-font-smoothing:antialiased;}
+
+/* ── SCREEN WRAPPER ── */
+.screen-wrap{max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:12px;flex-wrap:wrap;}
+.toolbar-title{font-size:13px;font-weight:600;color:var(--ink2);}
+.btn-print{font-family:var(--f);font-size:13px;font-weight:700;padding:9px 22px;border-radius:980px;border:none;cursor:pointer;background:var(--yellow);color:var(--ink);letter-spacing:-0.1px;}
+.btn-print:hover{opacity:0.88;}
+
+/* ── PROPUESTA SHEET ── */
+.sheet{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 32px rgba(12,18,32,0.10);}
+
+/* Header band */
+.sheet-header{background:var(--ink);padding:2rem 2.5rem 1.8rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.logo{font-size:28px;font-weight:800;letter-spacing:-0.8px;color:#fff;}
+.logo span{color:var(--yellow);}
+.header-meta{text-align:right;}
+.header-label{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:4px;}
+.header-date{font-size:13px;font-weight:500;color:rgba(255,255,255,0.7);}
+
+/* Yellow accent bar */
+.accent-bar{height:4px;background:linear-gradient(90deg,var(--yellow),#FFE000,var(--green));}
+
+/* Body */
+.sheet-body{padding:2rem 2.5rem;}
+
+/* Client + title block */
+.client-block{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.8rem;padding-bottom:1.5rem;border-bottom:1px solid var(--line);}
+.field-group{display:flex;flex-direction:column;gap:3px;}
+.field-label{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink3);}
+.field-val{font-size:15px;font-weight:700;color:var(--ink);line-height:1.3;}
+.field-val.large{font-size:19px;font-weight:800;letter-spacing:-0.4px;}
+
+/* Editable fields */
+[contenteditable]{outline:none;border-bottom:1.5px dashed var(--line);padding-bottom:1px;cursor:text;transition:border-color 0.15s;}
+[contenteditable]:focus{border-bottom-color:var(--yellow);}
+[contenteditable].empty{border-bottom-color:var(--red);}
+[contenteditable].empty::before{content:attr(data-placeholder);color:var(--red);opacity:0.7;font-weight:500;}
+[contenteditable]:not(:empty)::before{display:none;}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.8rem;}
+.kpi{background:var(--bg);border-radius:12px;padding:14px 16px;border:1px solid var(--line);}
+.kpi.accent{background:var(--ink);border-color:var(--ink);}
+.kpi-label{font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px;}
+.kpi.accent .kpi-label{color:rgba(255,255,255,0.4);}
+.kpi-num{font-size:20px;font-weight:800;letter-spacing:-0.8px;color:var(--ink);line-height:1;}
+.kpi.accent .kpi-num{color:var(--yellow);}
+.kpi-sub{font-size:10px;color:var(--ink3);margin-top:3px;font-weight:400;}
+.kpi.accent .kpi-sub{color:rgba(255,255,255,0.35);}
+
+/* Two column section */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.8rem;}
+
+/* Section heading */
+.sec-head{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line);}
+
+/* Data rows */
+.data-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--line);}
+.data-row:last-child{border-bottom:none;}
+.data-key{font-size:11px;color:var(--ink2);}
+.data-val{font-size:12px;font-weight:700;color:var(--ink);}
+.data-val.green{color:var(--green);}
+.data-val.blue{color:var(--blue);}
+
+/* System box */
+.sys-box{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+.sys-item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);}
+.sys-item:last-child{border-bottom:none;}
+.sys-dot{width:6px;height:6px;border-radius:50%;background:var(--yellow);margin-top:5px;flex-shrink:0;}
+.sys-key{font-size:10px;color:var(--ink3);font-weight:500;min-width:72px;}
+.sys-val{font-size:11px;font-weight:700;color:var(--ink);flex:1;}
+
+/* Savings highlight */
+.savings-hero{background:linear-gradient(135deg,#0C1220,#1A2A4A);border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.8rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.savings-left{}
+.savings-label{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:4px;}
+.savings-num{font-size:36px;font-weight:800;letter-spacing:-2px;color:var(--yellow);line-height:1;}
+.savings-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;}
+.savings-right{display:flex;gap:10px;}
+.savings-chip{background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 14px;text-align:center;}
+.chip-num{font-size:16px;font-weight:800;letter-spacing:-0.5px;color:#fff;line-height:1;}
+.chip-label{font-size:9px;color:rgba(255,255,255,0.35);margin-top:3px;font-weight:500;}
+
+/* Footer */
+.sheet-footer{background:var(--bg);border-top:1px solid var(--line);padding:1.4rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.advisor-block{}
+.advisor-name{font-size:13px;font-weight:700;color:var(--ink);}
+.advisor-contact{font-size:11px;color:var(--ink3);margin-top:2px;}
+.validity{font-size:10px;color:var(--ink3);text-align:right;}
+.validity strong{color:var(--ink2);}
+
+/* Signature line */
+.sig-block{padding:1.2rem 2.5rem 1.8rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.sig-line{border-top:1.5px solid var(--ink);padding-top:6px;}
+.sig-label{font-size:9px;color:var(--ink3);letter-spacing:0.06em;text-transform:uppercase;}
+
+/* ── PRINT ── */
+@media print{
+  body{background:#fff;}
+  .screen-wrap{padding:0;max-width:100%;}
+  .toolbar{display:none;}
+  .sheet{border-radius:0;box-shadow:none;}
+  [contenteditable]{border-bottom:none;}
+  [contenteditable].empty::before{color:var(--red);}
+}
+</style>
+</head>
+<body>
+<div class="screen-wrap">
+
+  <!-- toolbar -->
+  <div class="toolbar">
+    <span class="toolbar-title">Era Solar — Propuesta Comercial</span>
+    <button class="btn-print" onclick="window.print()">⬇ Imprimir / Guardar PDF</button>
+  </div>
+
+  <!-- sheet -->
+  <div class="sheet">
+
+    <!-- header -->
+    <div class="sheet-header">
+      <div>
+        <div class="logo">Era <span>Solar</span></div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:4px;font-weight:400;">Propuesta Comercial</div>
+      </div>
+      <div class="header-meta">
+        <div class="header-label">Fecha</div>
+        <div class="header-date" id="fecha-display"></div>
+      </div>
+    </div>
+    <div class="accent-bar"></div>
+
+    <!-- body -->
+    <div class="sheet-body">
+
+      <!-- client + title -->
+      <div class="client-block">
+        <div>
+          <div class="field-group" style="margin-bottom:14px;">
+            <div class="field-label">Título del proyecto</div>
+            <div class="field-val large">
+              <span contenteditable="true" data-placeholder="Título del proyecto" data-field="titulo" spellcheck="false"></span>
+            </div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Cliente</div>
+            <div class="field-val">
+              <span contenteditable="true" data-placeholder="Nombre del cliente" data-field="cliente" spellcheck="false"></span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="field-group" style="margin-bottom:14px;">
+            <div class="field-label">Comuna</div>
+            <div class="field-val">
+              <span contenteditable="true" data-placeholder="Comuna" data-field="comuna" spellcheck="false"></span>
+            </div>
+          </div>
+          <div class="field-group" style="margin-bottom:14px;">
+            <div class="field-label">Tipo de instalación</div>
+            <div class="field-val">
+              <span contenteditable="true" data-placeholder="Ej: Techo con estructuras" data-field="tipo_inst" spellcheck="false"></span>
+            </div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Tarifa actual (CLP/kWh)</div>
+            <div class="field-val">
+              <span contenteditable="true" data-placeholder="Ej: 225" data-field="tarifa" spellcheck="false" id="tarifa-field"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- savings hero -->
+      <div class="savings-hero">
+        <div class="savings-left">
+          <div class="savings-label">Ahorro anual estimado</div>
+          <div class="savings-num" id="hero-ahorro">—</div>
+          <div class="savings-sub" id="hero-sub">— / mes promedio</div>
+        </div>
+        <div class="savings-right">
+          <div class="savings-chip">
+            <div class="chip-num" id="chip-tir">—</div>
+            <div class="chip-label">TIR</div>
+          </div>
+          <div class="savings-chip">
+            <div class="chip-num" id="chip-payback">—</div>
+            <div class="chip-label">Payback</div>
+          </div>
+          <div class="savings-chip">
+            <div class="chip-num" id="chip-kwp">—</div>
+            <div class="chip-label">kWp instalados</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="kpi-strip">
+        <div class="kpi accent">
+          <div class="kpi-label">Generación anual</div>
+          <div class="kpi-num" id="kpi-gen">—</div>
+          <div class="kpi-sub">kWh / año</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Autoconsumo directo</div>
+          <div class="kpi-num" id="kpi-auto" style="color:var(--green)">—</div>
+          <div class="kpi-sub">kWh / año</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Inyección red</div>
+          <div class="kpi-num" id="kpi-inj" style="color:var(--blue)">—</div>
+          <div class="kpi-sub">kWh / año</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Consumo actual</div>
+          <div class="kpi-num" id="kpi-consumo">—</div>
+          <div class="kpi-sub">kWh / año</div>
+        </div>
+      </div>
+
+      <!-- two col: situación actual + sistema -->
+      <div class="two-col">
+        <div>
+          <div class="sec-head">Situación actual</div>
+          <div class="data-row">
+            <span class="data-key">Consumo anual</span>
+            <span class="data-val" id="d-consumo">—</span>
+          </div>
+          <div class="data-row">
+            <span class="data-key">Gasto anual actual</span>
+            <span class="data-val" id="d-gasto">—</span>
+          </div>
+          <div class="data-row">
+            <span class="data-key">Gasto mensual actual</span>
+            <span class="data-val" id="d-gasto-mes">—</span>
+          </div>
+          <div class="data-row" style="margin-top:8px;">
+            <span class="data-key">Ahorro por autoconsumo</span>
+            <span class="data-val green" id="d-ah-auto">—</span>
+          </div>
+          <div class="data-row" id="row-nb" style="display:none">
+            <span class="data-key">Ahorro por inyección</span>
+            <span class="data-val green" id="d-ah-inj">—</span>
+          </div>
+          <div class="data-row">
+            <span class="data-key"><strong>Ahorro total anual</strong></span>
+            <span class="data-val green" id="d-ah-total" style="font-size:13px;">—</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-head">Sistema propuesto</div>
+          <div class="sys-box">
+            <div class="sys-item">
+              <div class="sys-dot"></div>
+              <div class="sys-key">Potencia</div>
+              <div class="sys-val" id="sys-kwp">—</div>
+            </div>
+            <div class="sys-item">
+              <div class="sys-dot"></div>
+              <div class="sys-key">Paneles</div>
+              <div class="sys-val">
+                <span contenteditable="true" data-placeholder="Marca / modelo / cantidad" data-field="paneles" spellcheck="false"></span>
+              </div>
+            </div>
+            <div class="sys-item">
+              <div class="sys-dot"></div>
+              <div class="sys-key">Inversor</div>
+              <div class="sys-val">
+                <span contenteditable="true" data-placeholder="Marca / modelo" data-field="inversor" spellcheck="false"></span>
+              </div>
+            </div>
+            <div class="sys-item" id="row-bat-sys" style="display:none">
+              <div class="sys-dot" style="background:var(--blue)"></div>
+              <div class="sys-key">Batería</div>
+              <div class="sys-val" id="sys-bat">—</div>
+            </div>
+            <div class="sys-item">
+              <div class="sys-dot" style="background:var(--green)"></div>
+              <div class="sys-key">Modalidad</div>
+              <div class="sys-val" id="sys-modalidad">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sheet-body -->
+
+    <!-- footer advisor -->
+    <div class="sheet-footer">
+      <div class="advisor-block">
+        <div class="advisor-name">
+          <span contenteditable="true" data-placeholder="Nombre del asesor" data-field="asesor" spellcheck="false"></span>
+        </div>
+        <div class="advisor-contact">
+          <span contenteditable="true" data-placeholder="correo@erasolar.cl" data-field="correo" spellcheck="false"></span>
+          &nbsp;·&nbsp;
+          <span contenteditable="true" data-placeholder="+56 9 XXXX XXXX" data-field="telefono" spellcheck="false"></span>
+        </div>
+      </div>
+      <div class="validity">
+        Oferta válida por <strong>30 días</strong> desde la fecha de emisión.<br>
+        Valores en pesos chilenos (CLP) · Factor producción 1.600 kWh/kWp/año
+      </div>
+    </div>
+
+    <!-- signature -->
+    <div class="sig-block">
+      <div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Firma cliente · Fecha</div>
+      </div>
+      <div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Firma asesor Era Solar · Fecha</div>
+      </div>
+    </div>
+
+  </div><!-- /sheet -->
+</div><!-- /screen-wrap -->
+
+<script>
+// ── helpers ──
+function clp(v){return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(Math.round(v));}
+function num(v){return Math.round(v).toLocaleString('es-CL');}
+function pct(v){return v!==null?v.toFixed(1)+'%':'N/A';}
+
+// ── parse URL params ──
+const q=new URLSearchParams(location.search);
+function gn(k){const v=q.get(k);return(v!==null&&v!=='')? parseFloat(v):null;}
+function gs(k){return q.get(k);}
+
+const kwp          = gn('kwp');
+const consumoAnual = gn('consumoAnual');
+const prodAnual    = gn('prodAnual');
+const autoconsumo  = gn('autoconsumo');
+const inyectada    = gn('inyectada');
+const inyecta      = gs('inyecta')==='1';
+const ahorroAuto   = gn('ahorroAutoconsumo');
+const ahorroInj    = gn('ahorroInj');
+const ahorroAnual  = gn('ahorroAnual');
+const costoAnual   = gn('costoAnualAntes');
+const tieneBat     = gs('bateria')==='1';
+const batKwh       = gn('batKwh');
+const irr          = gs('irr');
+const payback      = gs('payback');
+
+// ── fill static fields ──
+if(ahorroAnual!==null){
+  document.getElementById('hero-ahorro').textContent = clp(ahorroAnual);
+  document.getElementById('hero-sub').textContent    = clp(ahorroAnual/12)+' / mes promedio';
+}
+document.getElementById('chip-tir').textContent     = irr&&irr!=='' ? irr+'%' : '—';
+document.getElementById('chip-payback').textContent = payback&&payback!=='' ? payback+' años' : '—';
+document.getElementById('chip-kwp').textContent     = kwp!==null ? kwp+' kWp' : '—';
+
+document.getElementById('kpi-gen').textContent     = prodAnual!==null ? num(prodAnual) : '—';
+document.getElementById('kpi-auto').textContent    = autoconsumo!==null ? num(autoconsumo) : '—';
+document.getElementById('kpi-inj').textContent     = inyecta&&inyectada!==null ? num(inyectada) : '—';
+document.getElementById('kpi-consumo').textContent = consumoAnual!==null ? num(consumoAnual) : '—';
+
+if(consumoAnual!==null) document.getElementById('d-consumo').textContent = num(consumoAnual)+' kWh/año';
+if(costoAnual!==null){
+  document.getElementById('d-gasto').textContent     = clp(costoAnual)+' /año';
+  document.getElementById('d-gasto-mes').textContent = clp(costoAnual/12)+' /mes';
+}
+if(ahorroAuto!==null) document.getElementById('d-ah-auto').textContent  = clp(ahorroAuto)+' /año';
+if(ahorroAnual!==null) document.getElementById('d-ah-total').textContent = clp(ahorroAnual)+' /año';
+
+if(inyecta && ahorroInj!==null && ahorroInj>0){
+  document.getElementById('row-nb').style.display='flex';
+  document.getElementById('d-ah-inj').textContent = clp(ahorroInj)+' /año';
+}
+
+if(kwp!==null && prodAnual!==null)
+  document.getElementById('sys-kwp').textContent = kwp+' kWp · '+num(prodAnual)+' kWh/año estimados';
+document.getElementById('sys-modalidad').textContent = inyecta ? 'Netbilling (inyección a red)' : 'Autoconsumo';
+if(tieneBat && batKwh!==null){
+  document.getElementById('row-bat-sys').style.display='flex';
+  document.getElementById('sys-bat').textContent = batKwh+' kWh';
+}
+
+// ── fecha hoy ──
+const hoy=new Date();
+const fechaStr=hoy.toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
+document.getElementById('fecha-display').textContent=fechaStr;
+
+// ── contenteditable empty/filled logic ──
+function checkEmpty(el){
+  const empty=el.textContent.trim()==='';
+  el.classList.toggle('empty',empty);
+}
+document.querySelectorAll('[contenteditable]').forEach(el=>{
+  checkEmpty(el);
+  el.addEventListener('input',()=>checkEmpty(el));
+  el.addEventListener('blur',()=>checkEmpty(el));
+  // also update tarifa-dependent fields when tarifa changes
+  if(el.dataset.field==='tarifa'){
+    el.addEventListener('input',()=>{
+      const val=parseFloat(el.textContent.replace(/\D/g,''));
+      if(!isNaN(val)&&val>0){
+        const nuevoGasto=consumoAnual*val;
+        document.getElementById('d-gasto').textContent=clp(nuevoGasto)+' /año';
+        document.getElementById('d-gasto-mes').textContent=clp(nuevoGasto/12)+' /mes';
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>
