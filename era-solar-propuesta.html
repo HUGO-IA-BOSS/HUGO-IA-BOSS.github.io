@@ -147,6 +147,7 @@ body{background:var(--bg);font-family:var(--f);color:var(--ink);-webkit-font-smo
       <div>
         <div class="logo">Era <span>Solar</span></div>
         <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:4px;font-weight:400;">Propuesta Comercial</div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.18);margin-top:8px;line-height:1.6;">Los Lingues SpA · 78.334.246-7</div>
       </div>
       <div class="header-meta">
         <div class="header-label">Fecha</div>
@@ -355,6 +356,11 @@ body{background:var(--bg);font-family:var(--f);color:var(--ink);-webkit-font-smo
 
     <!-- footer advisor -->
     <div class="sheet-footer">
+      <div style="font-size:9px;color:var(--ink3);line-height:1.7;">
+        <div style="font-weight:600;color:var(--ink2);">Los Lingues SpA</div>
+        <div>78.334.246-7</div>
+        <div>Desarrollo de proyectos energéticos</div>
+      </div>
       <div class="advisor-block">
         <div class="advisor-name">
           <span contenteditable="true" data-placeholder="Nombre del asesor" data-field="asesor" spellcheck="false"></span>
@@ -436,10 +442,10 @@ if(invTotal!==null){
   document.getElementById('prop-valor').textContent = ' '+new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(invTotal);
 }
 if(inyecta){
-  document.getElementById('prop-pagos').innerHTML = ' 5% Firma de Propuesta Comercial · 55% Inicio de construcción · 30% Término de construcción · 10% Aprobación TE4.';
+  document.getElementById('prop-pagos').innerHTML = ' 5% Firma de contrato · 55% Inicio de construcción · 30% Término de construcción · 10% Aprobación TE4.';
   document.getElementById('prop-garantia').textContent = ' 1 año a partir del fin de la construcción.';
 } else {
-  document.getElementById('prop-pagos').innerHTML = ' 5% Firma de Propuesta Comercial · 55% Inicio de construcción · 35% Término de construcción · 5% Aprobación TE1.';
+  document.getElementById('prop-pagos').innerHTML = ' 5% Firma de contrato · 55% Inicio de construcción · 35% Término de construcción · 5% Aprobación TE1.';
   document.getElementById('prop-garantia').textContent = ' 1 año a partir del fin de la construcción.';
 }
 
