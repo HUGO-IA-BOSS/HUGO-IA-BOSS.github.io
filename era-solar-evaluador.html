@@ -294,7 +294,7 @@ function KPI({ label, value, sub, color = 'gray' }) {
 }
 
 const DEFAULTS_CASA       = { costoKwh: 225, precioVentaNB: 105, tamanoKwp: 10, pctUso: 25, consumoAnual: 9000 };
-const DEFAULTS_INDUSTRIAL = { costoKwh: 190, precioVentaNB: 95,  tamanoKwp: 30, pctUso: 40, consumoAnual: 60000 };
+const DEFAULTS_INDUSTRIAL = { costoKwh: 125, precioVentaNB: 95,  tamanoKwp: 30, pctUso: 40, consumoAnual: 60000, costoKwpInst: 750000 };
 const DEFAULTS = {
   tipoPerfil: 'casa',
   costoKwh: 225, precioVentaNB: 105, pctUso: 25, puedeInyectar: true,
@@ -302,7 +302,7 @@ const DEFAULTS = {
   costoKwpInst: 900000, tamanoKwp: 10, consumoAnual: 9000,
   tieneInversor: false, costoKwpInversor: 150000,
   tieneBateria: false, costoKwhBat: 400000, tamanoBat: 10,
-  durBat: 10, durEval: 20, usaTasaDesc: false, tasaDesc: 8,
+  durBat: 10, durEval: 15, usaTasaDesc: false, tasaDesc: 8,
 };
 
 function App() {
@@ -333,8 +333,11 @@ function App() {
   const zeroY = (chartMaxPos / chartRange) * SVG_H;
   const showLabel = i => i === 0 || i === p.durEval || i % Math.ceil(p.durEval / 5) === 0;
 
+  const iva = v => Math.round(v * 1.19);
   const fmtKCLP = v => `$${(v/1000).toFixed(0)}K`;
+  const fmtKCLP_IVA = v => `$${(v/1000).toFixed(0)}K (c/IVA $${(iva(v)/1000).toFixed(0)}K)`;
   const fmtCLP1 = v => `$${v.toLocaleString('es-CL')}`;
+  const fmtCLP1_IVA = v => `$${v.toLocaleString('es-CL')} (c/IVA $${iva(v).toLocaleString('es-CL')})`;
 
   return (
     <div className="container">
@@ -369,7 +372,7 @@ function App() {
             <SliderInput
               label={p.usaPrecioPromedio ? "Tarifa variable — ahorro por kWh (CLP/kWh)" : "Costo energía (CLP/kWh)"}
               value={p.costoKwh}
-              onChange={v => set('costoKwh', v)} min={50} max={350} step={1} fmt={fmtCLP1} />
+              onChange={v => set('costoKwh', v)} min={50} max={350} step={1} fmt={p.tipoPerfil==='industrial' ? fmtCLP1_IVA : fmtCLP1} />
             <Toggle label="Separar tarifa variable y precio boleta"
               value={p.usaPrecioPromedio} onChange={v => set('usaPrecioPromedio', v)} />
             {p.usaPrecioPromedio && (
@@ -430,7 +433,7 @@ function App() {
               <SliderInput label="Tamaño batería (kWh)" value={p.tamanoBat}
                 onChange={v => set('tamanoBat', v)} min={3} max={100} step={1} fmt={v => `${v} kWh`} />
               <SliderInput label="Costo batería (CLP/kWh)" value={p.costoKwhBat}
-                onChange={v => set('costoKwhBat', v)} min={100000} max={1200000} step={10000} fmt={fmtKCLP} />
+                onChange={v => set('costoKwhBat', v)} min={100000} max={1200000} step={10000} fmt={p.tipoPerfil==='industrial' ? fmtKCLP_IVA : fmtKCLP} />
               <SliderInput label="Duración batería (años)" value={p.durBat}
                 onChange={v => set('durBat', v)} min={5} max={20} step={1} fmt={v => `${v} años`} />
             </>)}
@@ -458,12 +461,12 @@ function App() {
             <div className="collapsible-body" style={{maxHeight: advancedOpen ? '400px' : '0'}}>
               <div style={{paddingTop:'12px'}}>
                 <SliderInput label="Costo paneles (CLP/kWp)" value={p.costoKwpInst}
-                  onChange={v => set('costoKwpInst', v)} min={300000} max={1500000} step={10000} fmt={fmtKCLP} />
+                  onChange={v => set('costoKwpInst', v)} min={300000} max={1500000} step={10000} fmt={p.tipoPerfil==='industrial' ? fmtKCLP_IVA : fmtKCLP} />
                 <Toggle label="Incluir inversor en la inversión"
                   value={p.tieneInversor} onChange={v => set('tieneInversor', v)} />
                 {p.tieneInversor && (
                   <SliderInput label="Costo inversor (CLP/kWp)" value={p.costoKwpInversor}
-                    onChange={v => set('costoKwpInversor', v)} min={50000} max={500000} step={10000} fmt={fmtKCLP} />
+                    onChange={v => set('costoKwpInversor', v)} min={50000} max={500000} step={10000} fmt={p.tipoPerfil==='industrial' ? fmtKCLP_IVA : fmtKCLP} />
                 )}
               </div>
             </div>
