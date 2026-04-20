@@ -290,6 +290,11 @@ body{background:var(--bg);font-family:var(--f);color:var(--ink);-webkit-font-smo
             </div>
             <div class="sys-item">
               <div class="sys-dot"></div>
+              <div class="sys-key">Producción</div>
+              <div class="sys-val" id="sys-factor">—</div>
+            </div>
+            <div class="sys-item">
+              <div class="sys-dot"></div>
               <div class="sys-key">Paneles</div>
               <div class="sys-val">
                 <span contenteditable="true" data-placeholder="Marca / modelo / cantidad" data-field="paneles" spellcheck="false"></span>
@@ -421,6 +426,7 @@ const irr          = gs('irr');
 const payback      = gs('payback');
 const durEval      = gn('durEval');
 const invTotal     = gn('invTotal');
+const factorProd   = gn('factorProd');
 
 // ── fill static fields ──
 if(ahorroAnual!==null){
@@ -513,6 +519,8 @@ if(inyecta && ahorroInj!==null && ahorroInj>0){
 
 if(kwp!==null && prodAnual!==null)
   document.getElementById('sys-kwp').textContent = kwp+' kWp · '+num(prodAnual)+' kWh/año estimados';
+if(factorProd!==null)
+  document.getElementById('sys-factor').textContent = factorProd+' kWh/kWp/año ('+(factorProd/1600).toFixed(2)+'×)';
 document.getElementById('sys-modalidad').textContent = inyecta ? 'Netbilling (inyección a red)' : 'Autoconsumo';
 if(tieneBat && batKwh!==null){
   document.getElementById('row-bat-sys').style.display='flex';

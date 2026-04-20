@@ -193,8 +193,8 @@ function clpM(v) {
 function calcProject(p) {
   const { costoKwh, precioVentaNB, pctUso, puedeInyectar, costoKwpInst, tamanoKwp,
           consumoAnual, tieneBateria, costoKwhBat, tamanoBat, durBat, durEval, tasaDesc,
-          tieneInversor, costoKwpInversor, usaPrecioPromedio, precioPromedio } = p;
-  const prodAnual = tamanoKwp * PROD_FACTOR;
+          tieneInversor, costoKwpInversor, usaPrecioPromedio, precioPromedio, factorProd } = p;
+  const prodAnual = tamanoKwp * factorProd;
   let autoconsumoDirecto, excedenteBase, consumoNoche;
   if (puedeInyectar) {
     autoconsumoDirecto = Math.min(prodAnual * (pctUso / 100), consumoAnual);
@@ -297,6 +297,7 @@ const DEFAULTS_CASA       = { costoKwh: 225, precioVentaNB: 105, tamanoKwp: 10, 
 const DEFAULTS_INDUSTRIAL = { costoKwh: 125, precioVentaNB: 95,  tamanoKwp: 30, pctUso: 40, consumoAnual: 60000, costoKwpInst: 750000 };
 const DEFAULTS = {
   tipoPerfil: 'casa',
+  factorProd: 1600,
   costoKwh: 225, precioVentaNB: 105, pctUso: 25, puedeInyectar: true,
   usaPrecioPromedio: false, precioPromedio: 190,
   costoKwpInst: 900000, tamanoKwp: 10, consumoAnual: 9000,
@@ -393,6 +394,9 @@ function App() {
             <SliderInput label="Tamaño instalación (kWp)" value={p.tamanoKwp}
               onChange={v => set('tamanoKwp', v)} min={5} max={200} step={1}
               fmt={v => `${v} kWp`} />
+            <SliderInput label="Factor de producción (kWh/kWp/año)" value={p.factorProd}
+              onChange={v => set('factorProd', v)} min={800} max={1700} step={10}
+              fmt={v => `${v} (${(v/1600).toFixed(2)}×)`} />
             <SliderInput
               label={p.puedeInyectar ? "% autoconsumo sobre generación" : "% del consumo en horario solar"}
               value={p.pctUso}
@@ -495,6 +499,7 @@ function App() {
                 payback: r.payback !== null ? r.payback.toFixed(1) : '',
                 durEval: p.durEval,
                 invTotal: Math.round(r.invTotal),
+                factorProd: p.factorProd,
               });
               window.open('era-solar-propuesta.html?' + params.toString(), '_blank');
             }}
