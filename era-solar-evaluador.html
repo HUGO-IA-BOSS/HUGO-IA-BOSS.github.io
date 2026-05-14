@@ -314,6 +314,7 @@ function App() {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [editingConsumo, setEditingConsumo] = useState(false);
+  const [editingTarifa, setEditingTarifa] = useState(false);
 
   const switchPerfil = (perfil) => {
     const vals = perfil === 'casa' ? DEFAULTS_CASA : DEFAULTS_INDUSTRIAL;
@@ -370,10 +371,25 @@ function App() {
           {/* Tarifa */}
           <div className="card">
             <div className="section-title">⚡ Tarifa Eléctrica</div>
-            <SliderInput
-              label={p.usaPrecioPromedio ? "Tarifa variable — ahorro por kWh (CLP/kWh)" : "Costo energía (CLP/kWh)"}
-              value={p.costoKwh}
-              onChange={v => set('costoKwh', v)} min={50} max={350} step={1} fmt={p.tipoPerfil==='industrial' ? fmtCLP1_IVA : fmtCLP1} />
+            <div className="slider-row">
+              <div className="slider-header">
+                <span className="label" style={{maxWidth:'65%',lineHeight:'1.3'}}>{p.usaPrecioPromedio ? "Tarifa variable — ahorro por kWh (CLP/kWh)" : "Costo energía (CLP/kWh)"}</span>
+                {editingTarifa
+                  ? <input autoFocus type="number" defaultValue={p.costoKwh}
+                      onBlur={e => { const v=parseInt(e.target.value); if(!isNaN(v)&&v>=1) set('costoKwh',v); setEditingTarifa(false); }}
+                      onKeyDown={e => { if(e.key==='Enter'){ const v=parseInt(e.target.value); if(!isNaN(v)&&v>=1) set('costoKwh',v); setEditingTarifa(false);} if(e.key==='Escape') setEditingTarifa(false); }}
+                      style={{width:'130px',textAlign:'right',fontWeight:700,fontSize:'0.82rem',background:'rgba(255,255,255,0.06)',border:'0.5px solid rgba(255,224,0,0.4)',borderRadius:'6px',padding:'2px 8px',outline:'none',fontFamily:'var(--f)',color:'var(--yellow)'}} />
+                  : <span className="value-badge" style={{cursor:'pointer',borderBottom:'1px dashed rgba(255,224,0,0.4)'}}
+                      title="Clic para editar"
+                      onClick={() => setEditingTarifa(true)}>
+                      {p.tipoPerfil==='industrial' ? fmtCLP1_IVA(p.costoKwh) : fmtCLP1(p.costoKwh)} ✎
+                    </span>
+                }
+              </div>
+              <input type="range" min={50} max={350} step={1} value={Math.min(p.costoKwh,350)}
+                onChange={e => set('costoKwh', parseFloat(e.target.value))} />
+              <div className="slider-limits"><span>$50</span><span>$350</span></div>
+            </div>
             <Toggle label="Separar tarifa variable y precio boleta"
               value={p.usaPrecioPromedio} onChange={v => set('usaPrecioPromedio', v)} />
             {p.usaPrecioPromedio && (
@@ -500,6 +516,7 @@ function App() {
                 durEval: p.durEval,
                 invTotal: Math.round(r.invTotal),
                 factorProd: p.factorProd,
+                perfil: p.tipoPerfil,
               });
               window.open('era-solar-propuesta.html?' + params.toString(), '_blank');
             }}

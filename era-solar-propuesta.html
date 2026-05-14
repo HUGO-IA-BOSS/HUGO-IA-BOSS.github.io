@@ -328,7 +328,7 @@ body{background:var(--bg);font-family:var(--f);color:var(--ink);-webkit-font-smo
           <div style="margin-bottom:10px;">
             <span style="font-weight:700;color:var(--ink);">Valor total del proyecto:</span>
             <span id="prop-valor"> —</span>
-            <span style="color:var(--ink3);"> CLP IVA incluido.</span>
+            <span id="prop-iva-label" style="color:var(--ink3);"> CLP IVA incluido.</span>
           </div>
           <div style="margin-bottom:10px;">
             <span style="font-weight:700;color:var(--ink);">Pago por avance de obra:</span>
@@ -427,6 +427,7 @@ const payback      = gs('payback');
 const durEval      = gn('durEval');
 const invTotal     = gn('invTotal');
 const factorProd   = gn('factorProd');
+const esIndustrial = gs('perfil')==='industrial';
 
 // ── fill static fields ──
 if(ahorroAnual!==null){
@@ -446,6 +447,7 @@ if(inyecta) document.getElementById('disclaimer-nb').style.display='block';
 // propuesta comercial
 if(invTotal!==null){
   document.getElementById('prop-valor').textContent = ' '+new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(invTotal);
+  if(esIndustrial) document.getElementById('prop-iva-label').textContent = ' CLP + IVA.';
 }
 if(inyecta){
   document.getElementById('prop-pagos').innerHTML = ' 5% Firma de contrato · 55% Inicio de construcción · 30% Término de construcción · 10% Aprobación TE4.';
