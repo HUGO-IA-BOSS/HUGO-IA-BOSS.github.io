@@ -324,7 +324,7 @@ body{background:var(--bg);font-family:var(--f);color:var(--ink);-webkit-font-smo
       <!-- propuesta comercial -->
       <div style="margin-top:1.8rem;padding-top:1.5rem;border-top:1px solid var(--line);">
         <div class="sec-head">Propuesta comercial</div>
-        <div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px 20px;font-size:12px;color:var(--ink2);line-height:1.9;">
+        <div id="prop-comercial-box" style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px 20px;font-size:12px;color:var(--ink2);line-height:1.9;">
           <div style="margin-bottom:10px;">
             <span style="font-weight:700;color:var(--ink);">Valor total del proyecto:</span>
             <span id="prop-valor"> —</span>
@@ -456,6 +456,25 @@ if(inyecta){
   document.getElementById('prop-pagos').innerHTML = ' 5% Firma de contrato · 55% Inicio de construcción · 35% Término de construcción · 5% Aprobación TE4.';
   document.getElementById('prop-garantia').textContent = ' 1 año a partir del fin de la construcción.';
 }
+
+// ── bloques editables con doble clic (disclaimer + propuesta comercial) ──
+function makeEditableBlock(el){
+  if(!el) return;
+  el.title = 'Doble clic para editar';
+  el.style.cursor = 'default';
+  el.addEventListener('dblclick', ()=>{
+    el.contentEditable = 'true';
+    el.style.outline = '1.5px dashed #1A6FD4';
+    el.style.outlineOffset = '2px';
+    el.focus();
+  });
+  el.addEventListener('blur', ()=>{
+    el.contentEditable = 'false';
+    el.style.outline = 'none';
+  });
+}
+makeEditableBlock(document.getElementById('disclaimer-nb'));
+makeEditableBlock(document.getElementById('prop-comercial-box'));
 
 // ── términos y condiciones ──
 const tcWrap = document.getElementById('tc-list');
