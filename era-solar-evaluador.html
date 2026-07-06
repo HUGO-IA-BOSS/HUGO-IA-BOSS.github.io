@@ -558,7 +558,7 @@ function App() {
                       : `TIR ${irrPct?.toFixed(1)}% no supera la tasa de descuento del ${p.tasaDesc}%`)
                   : (r.irr === null
                     ? 'El proyecto no alcanza a recuperar la inversión'
-                    : `TIR: ${irrPct?.toFixed(1)}%  ·  Inversión: ${clpM(r.invTotal)}`)}
+                    : `TIR: ${irrPct?.toFixed(1)}%  ·  Inversión: ${clp(r.invTotal)}`)}
               </div>
             </div>
           </div>
@@ -722,23 +722,23 @@ function App() {
             <div className="section-sep">Inversión</div>
             <div className="inv-row inv-row-sub">
               <span className="inv-label">Paneles ({p.tamanoKwp} kWp × {clp(p.costoKwpInst)}/kWp)</span>
-              <span className="inv-val">{clpM(r.invInst)}</span>
+              <span className="inv-val">{clp(r.invInst)}</span>
             </div>
             {p.tieneInversor && (
               <div className="inv-row inv-row-sub">
                 <span className="inv-label">Inversor ({p.tamanoKwp} kWp × {clp(p.costoKwpInversor)}/kWp)</span>
-                <span className="inv-val">{clpM(r.invInversor)}</span>
+                <span className="inv-val">{clp(r.invInversor)}</span>
               </div>
             )}
             {p.tieneBateria && (
               <div className="inv-row inv-row-sub">
                 <span className="inv-label">Batería ({p.tamanoBat} kWh × {clp(p.costoKwhBat)}/kWh)</span>
-                <span className="inv-val">{clpM(r.invBat)}</span>
+                <span className="inv-val">{clp(r.invBat)}</span>
               </div>
             )}
             <div className="inv-row inv-row-total">
               <span className="inv-label-total">Total inversión</span>
-              <span className="inv-val-total">{clpM(r.invTotal)}</span>
+              <span className="inv-val-total">{clp(r.invTotal)}</span>
             </div>
           </div>
 
