@@ -251,14 +251,32 @@ function calcProject(p) {
            cfs, flujoCum, vpn, irr, costoMensualAntes, costoMensualDespues, payback };
 }
 
-function SliderInput({ label, value, onChange, min, max, step, fmt }) {
+function SliderInput({ label, value, onChange, min, max, step, fmt, editable }) {
+  const [editing, setEditing] = useState(false);
+  const commit = raw => {
+    const v = parseFloat(raw);
+    if (!isNaN(v)) onChange(v);
+    setEditing(false);
+  };
   return (
     <div className="slider-row">
       <div className="slider-header">
         <span className="label" style={{maxWidth:'65%',lineHeight:'1.3'}}>{label}</span>
-        <span className="value-badge">{fmt ? fmt(value) : value}</span>
+        {editable && editing ? (
+          <input autoFocus type="number" defaultValue={value} step={step}
+            onBlur={e => commit(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') commit(e.target.value); if (e.key === 'Escape') setEditing(false); }}
+            style={{width:'120px',textAlign:'right',fontWeight:700,fontSize:'0.82rem',background:'rgba(255,255,255,0.06)',border:'0.5px solid rgba(255,224,0,0.4)',borderRadius:'6px',padding:'2px 8px',outline:'none',fontFamily:'var(--f)',color:'var(--yellow)'}} />
+        ) : (
+          <span className="value-badge"
+            style={editable ? {cursor:'pointer',borderBottom:'1px dashed rgba(255,224,0,0.4)'} : undefined}
+            title={editable ? 'Clic para editar' : undefined}
+            onClick={editable ? () => setEditing(true) : undefined}>
+            {fmt ? fmt(value) : value}{editable ? ' ✎' : ''}
+          </span>
+        )}
       </div>
-      <input type="range" min={min} max={max} step={step} value={value}
+      <input type="range" min={min} max={max} step={step} value={Math.min(Math.max(value, min), max)}
         onChange={e => onChange(parseFloat(e.target.value))} />
       <div className="slider-limits">
         <span>{fmt ? fmt(min) : min}</span>
@@ -409,7 +427,7 @@ function App() {
             <div className="section-title">☀️ Instalación Solar</div>
             <SliderInput label="Tamaño instalación (kWp)" value={p.tamanoKwp}
               onChange={v => set('tamanoKwp', v)} min={5} max={200} step={1}
-              fmt={v => `${v} kWp`} />
+              fmt={v => `${v} kWp`} editable />
             <SliderInput label="Factor de producción (kWh/kWp/año)" value={p.factorProd}
               onChange={v => set('factorProd', v)} min={800} max={1700} step={10}
               fmt={v => `${v} (${(v/1600).toFixed(2)}×)`} />
@@ -481,12 +499,12 @@ function App() {
             <div className="collapsible-body" style={{maxHeight: advancedOpen ? '400px' : '0'}}>
               <div style={{paddingTop:'12px'}}>
                 <SliderInput label="Costo paneles (CLP/kWp)" value={p.costoKwpInst}
-                  onChange={v => set('costoKwpInst', v)} min={300000} max={1500000} step={10000} fmt={p.tipoPerfil==='industrial' ? fmtKCLP_IVA : fmtKCLP} />
+                  onChange={v => set('costoKwpInst', v)} min={300000} max={1500000} step={10000} fmt={p.tipoPerfil==='industrial' ? fmtKCLP_IVA : fmtKCLP} editable />
                 <Toggle label="Incluir inversor en la inversión"
                   value={p.tieneInversor} onChange={v => set('tieneInversor', v)} />
                 {p.tieneInversor && (
                   <SliderInput label="Costo inversor (CLP/kWp)" value={p.costoKwpInversor}
-                    onChange={v => set('costoKwpInversor', v)} min={50000} max={500000} step={10000} fmt={p.tipoPerfil==='industrial' ? fmtKCLP_IVA : fmtKCLP} />
+                    onChange={v => set('costoKwpInversor', v)} min={50000} max={500000} step={10000} fmt={p.tipoPerfil==='industrial' ? fmtKCLP_IVA : fmtKCLP} editable />
                 )}
               </div>
             </div>
